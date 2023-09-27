@@ -7,3 +7,4 @@ admin.site.register(SalesInvoice)
 admin.site.register(SalesOrder)
 admin.site.register(DeliveryNote)
 admin.site.register(ClientDetails)
+
