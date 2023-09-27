@@ -2,7 +2,9 @@ from .models import Order,ClientDetails,SalesInvoice,SalesOrder,DeliveryNote
 from twilio.rest import Client
 from notifications.settings import TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN
 from django.http import HttpResponse
+
 from django.shortcuts import get_object_or_404, render
+
 
 # Create your views here.
 # order_details = {
