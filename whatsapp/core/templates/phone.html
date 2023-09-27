@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}WhatsApp Detailing{% endblock %}
+
+{% block content %}
+<style>
+.select-asset, .select-bond {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+	align-items: center;
+}
+.select-asset select, .select-bond select {
+	border: none !important;
+}
+.main-didvider {
+	height: 10px;
+}
+.form-grid-fxd {
+	gap: 1rem !important;
+    grid-template-columns: 1fr 2fr 1fr 2fr 1fr 2fr;
+    display: grid;
+}
+.grey-bg{
+    background-color: rgb(205, 205, 205);
+}
+.body-text-blue{
+	color: #013983;
+  }
+.submit-flex-end{
+    display: flex;
+    flex-direction: row-reverse;
+}
+.btn-collection-top {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+	align-items: center;
+}
+.btn-collection-top p {
+	margin: 0px !important;
+}
+.input-wrap{
+    border-radius: 15px;
+    width: max-content;
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+}
+.asset-buttons{
+    background: #013983;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+.title-txt{
+	
+	align-items: flex-start;
+	color: #cc9900;
+	font-style: normal;
+	font-weight: 700;
+	font-size: larger;
+	margin: 8px;
+	filter: drop-shadow(0px 8px 8px rgba(0, 0, 0, 0.25));
+	
+	margin-bottom: 40px;
+  }
+  .sub-title-txt{
+	align-items: flex-start;
+	color: #cc9900;
+	font-style: normal;
+	font-weight: 500;
+	font-size: medium;
+	margin: 8px;
+	filter: drop-shadow(0px 8px 8px rgba(0, 0, 0, 0.25));
+	
+	margin-bottom: 40px;
+  }
+  .upload-buttons{
+	background: #CCCACA;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  }
+</style>
+<div class="bg-light rounded-2 portfolic-wrap mt-5 p-3 body-text-blue">
+
+    <label class="title-txt">Enter WhatsApp Contact</label>
+
+    <form action="{% url 'send_notification' %}" method="post" class="form-grid-fxd">
+        {% csrf_token %}
+        <div class="form-group mb2">
+
+        </div>
+        <label class="label-wrap" for="your_name">Client WhatsApp number: </label> 
+        <div class="input-wrap">
+
+            <input id="user_number" type="text" class="form-control" name="user_number" >
+
+        </div>
+
+        
+        
+        <input type="submit" value="Submit" class="btn btn-primary upload-buttons">
+    </form>
+
+</div>
+ 
+{% endblock %}
+
