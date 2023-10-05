@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from core.views import sales_order_list, search_clients, send_notification,home,client_sales_order,delivery_note, send_notification_view, send_sales_order,deliveries_list,search_clients_delivery
+from core.views import clients, sales_order_list, search_clients, send_notification,home,client_sales_order,delivery_note, send_notification_view, send_sales_order,deliveries_list,search_clients_delivery,dashboard,message_logs
 
 
 
@@ -31,6 +31,8 @@ urlpatterns = [
     path('delivery_list/',deliveries_list,name='delivery_list'),
     path('send_whatsapp_message/<int:client_id>/', send_sales_order, name='send_whatsapp_message'),
     path('search/', search_clients, name='search_clients'),
-    path('search_deliveries/',search_clients_delivery,name='search_client_deliveries')
-    
+    path('search_deliveries/',search_clients_delivery,name='search_client_deliveries'),
+    path('dashboard/', dashboard, name='dashboard'),
+    path('clients/', clients, name='client_list'),
+    path('message_logs/', message_logs, name='message_logs'),
 ]

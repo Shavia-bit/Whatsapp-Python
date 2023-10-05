@@ -1,7 +1,10 @@
-from .models import Order,ClientDetails,SalesInvoice,SalesOrder,DeliveryNote
+from datetime import datetime
+from .models import Order,ClientDetails,SalesInvoice,SalesOrder,DeliveryNote,MessageLog
 from twilio.rest import Client
+from twilio.base.exceptions import TwilioRestException 
 from notifications.settings import TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN
 from django.http import HttpResponse
+from django.db.models import Sum
 
 from django.shortcuts import get_object_or_404, render,redirect
 from django.db.models import Q
@@ -17,7 +20,22 @@ from django.db.models import Q
 # }
 
 def home(request):
-    return render(request,'home.html')
+    sales_orders = SalesOrder.objects.all()
+    deliveries = DeliveryNote.objects.all()
+
+    total_order_value = sales_orders.aggregate(total_order_value = Sum('total_order_value'))['total_order_value'] or 0
+    tax_value = SalesOrder.objects.count()
+    total_clients = ClientDetails.objects.count()
+    deliveries_value = DeliveryNote.objects.count()
+
+    context = {
+        'total_order_value':total_order_value,
+        'tax_value':tax_value,
+        'total_clients':total_clients,
+        'deliveries_value':deliveries_value
+    }
+
+    return render(request,'dashboard.html',context)
 
 def search_clients(request):
     query = request.GET.get('search_query')
@@ -59,6 +77,10 @@ def search_clients_delivery(request):
 
     return render(request, 'delivery_note.html', context)
 
+def message_logs(request):
+ # Retrieve all message logs from the database
+    message_logs = MessageLog.objects.all()
+    return render(request, 'message_logs.html', {'message_logs': message_logs})
 
 def send_sales_order(request,client_id):
     client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
@@ -67,27 +89,62 @@ def send_sales_order(request,client_id):
     orders = SalesOrder.objects.filter(client=client_instance) 
     print(f"Order: {orders}")
     for order in orders:
-        message = client.messages.create(
-            from_='whatsapp:+14155238886',
-            body='Your {} order of {} has shipped and should be delivered on {}. Details: {}'.format(
-                order.total_order_value, order.order_number, order.delivery_address,
-                order.delivery_address),
-            to='whatsapp:+{}'.format(user_whatsapp_number)
-        )
+        try:
 
-        print(f"WhatsApp message sent to {user_whatsapp_number}, SID: {message.sid}")
-        # return HttpResponse('Great! Expect a message...')
-        return redirect('sales_order_list')
+            message = client.messages.create(
+                from_='whatsapp:+14155238886',
+                body='Your {} order of {} has shipped and should be delivered on {}. Details: {}'.format(
+                    order.total_order_value, order.order_number, order.delivery_address,
+                    order.delivery_address),
+                to='whatsapp:+{}'.format(user_whatsapp_number)
+            )
+            message_log = MessageLog.objects.create(
+                content = message.body,
+                to_number = user_whatsapp_number,
+                sid = message.sid
+
+            )
+            print(f"WhatsApp message sent to {user_whatsapp_number}, SID: {message.sid}")
+        except TwilioRestException as e:
+            print(f"WhatsApp message to {user_whatsapp_number} failed. Error: {e}")
+            # return HttpResponse('Great! Expect a message...')
+            return redirect('sales_order_list')
+            
+
+        
+
     else:
         return HttpResponse('No order details found in the database.')
     
 
 def sales_order_list(request):
+    # Date Sorting
+    start_date=request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    clients = ClientDetails.objects.all()
+
+
+
     # Retrieve the list of sales orders and their associated clients
-    sales_orders = SalesOrder.objects.all()
+    # sales_orders = SalesOrder.objects.all()
+
+    if start_date and end_date:
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
+        end_date = datetime.strptime(end_date, '%Y-%m-%d')
+        sales_orders = SalesOrder.objects.filter(
+                Q(date_added__range=(start_date, end_date)) |
+                Q(date_modified__range=(start_date, end_date))
+        ).order_by('-date_added') # Sort by most recent date
+        
+    else:
+        sales_orders = SalesOrder.objects.filter(client__in=clients)
     
     context = {
         'sales_orders': sales_orders,
+        'start_date':start_date,
+        'end_date':end_date
+
     }
     
     return render(request, 'sales_order_list.html', context)
@@ -190,9 +247,30 @@ def delivery_note(request,client_id):
 
 
 def deliveries_list(request):
+
+    #Data Sorting
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    clients = ClientDetails.objects.all()
+
+    if start_date and end_date:
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
+        end_date = datetime.strptime(end_date, '%Y-%m-%d')
+        deliveries = DeliveryNote.objects.filter(
+                Q(date_added__range=(start_date, end_date)) |
+                Q(date_modified__range=(start_date, end_date))
+        ).order_by('-date_added') # Sort by most recent date
+        
+    else:
+        deliveries = DeliveryNote.objects.filter(client__in=clients)
+
+
     deliveries = DeliveryNote.objects.all()
     context = {
         'delivery_notes':deliveries,
+        'start_date':start_date,
+        'end_date':end_date
     }
 
     return render(request,'delivery_note.html',context)
@@ -203,4 +281,19 @@ def sales_invoice(request):
 
 
 def clients(request):
-    return render(request,'clients.html')
+    clients_list = ClientDetails.objects.all()
+    context = {
+        'clients_list':clients_list
+    }
+
+    return render(request,'dashboard.html',context)
+def dashboard(request):
+    sales_orders = SalesOrder.objects.all()
+
+    total_order_value = sales_orders.aggregate(total_order_value = Sum('total_order_value'))['total_order_value'] or 0
+
+    context = {
+        'total_order_value':total_order_value
+    }
+
+    return render(request,'dashboard.html',context)
