@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from core.views import clients, sales_order_list, search_clients, send_notification,home,client_sales_order,delivery_note, send_notification_view, send_sales_order,deliveries_list,search_clients_delivery,dashboard,message_logs
+from core.views import send_invoice,clients, sales_invoice,sales_order_list, search_clients, send_notification,home,client_sales_order,delivery_note, send_notification_view, send_sales_order,deliveries_list,search_clients_delivery,dashboard,message_logs
 
 
 
@@ -26,6 +26,7 @@ urlpatterns = [
     path('send_notification/',send_notification,name='send_notification'),
     path('client_sales_orders/',client_sales_order,name = 'cliet_sales_order'),
     path('delivery_note/<int:client_id>/',delivery_note,name='delivery_notes'),
+    path('send_invoice/<int:client_id>/',send_invoice,name='send_invoice'),
     path('send_notification_view/', send_notification_view, name='send_notification_view'),
     path('sales_order_list/', sales_order_list, name='sales_order_list'),
     path('delivery_list/',deliveries_list,name='delivery_list'),
@@ -35,4 +36,5 @@ urlpatterns = [
     path('dashboard/', dashboard, name='dashboard'),
     path('clients/', clients, name='client_list'),
     path('message_logs/', message_logs, name='message_logs'),
+    path('sales_invoices/',sales_invoice, name='sales_invoices')
 ]

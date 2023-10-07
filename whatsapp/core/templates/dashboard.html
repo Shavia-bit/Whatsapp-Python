@@ -523,11 +523,11 @@ body {
                 </li>
 
                 <li>
-                    <a href="#">
+                    <a href="{% url 'sales_invoices'%}">
                         <span class="icon">
                             <ion-icon name="help-outline"></ion-icon>
                         </span>
-                        <span class="title">Help</span>
+                        <span class="title">Invoices</span>
                     </a>
                 </li>
 
@@ -636,75 +636,37 @@ body {
                         <h2>Recent Orders</h2>
                         <a href="#" class="btn">View All</a>
                     </div>
-
                     <table>
-                        <thead>
-                            <tr>
-                                <td>Name</td>
-                                <td>Price</td>
-                                <td>Payment</td>
-                                <td>Status</td>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            <tr>
-                                <td>Star Refrigerator</td>
-                                <td>$1200</td>
-                                <td>Paid</td>
-                                <td><span class="status delivered">Delivered</span></td>
-                            </tr>
-
-                            <tr>
-                                <td>Dell Laptop</td>
-                                <td>$110</td>
-                                <td>Due</td>
-                                <td><span class="status pending">Pending</span></td>
-                            </tr>
-
-                            <tr>
-                                <td>Apple Watch</td>
-                                <td>$1200</td>
-                                <td>Paid</td>
-                                <td><span class="status return">Return</span></td>
-                            </tr>
-
-                            <tr>
-                                <td>Addidas Shoes</td>
-                                <td>$620</td>
-                                <td>Due</td>
-                                <td><span class="status inProgress">In Progress</span></td>
-                            </tr>
-
-                            <tr>
-                                <td>Star Refrigerator</td>
-                                <td>$1200</td>
-                                <td>Paid</td>
-                                <td><span class="status delivered">Delivered</span></td>
-                            </tr>
-
-                            <tr>
-                                <td>Dell Laptop</td>
-                                <td>$110</td>
-                                <td>Due</td>
-                                <td><span class="status pending">Pending</span></td>
-                            </tr>
-
-                            <tr>
-                                <td>Apple Watch</td>
-                                <td>$1200</td>
-                                <td>Paid</td>
-                                <td><span class="status return">Return</span></td>
-                            </tr>
-
-                            <tr>
-                                <td>Addidas Shoes</td>
-                                <td>$620</td>
-                                <td>Due</td>
-                                <td><span class="status inProgress">In Progress</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                      <thead>
+                          <tr>
+                              <td>SID</td>
+                              <td>WA Number</td>
+                              <td>Status</td>
+                          </tr>
+                      </thead>
+          
+                      <tbody>
+                          {% for log in message_logs %}
+                          <tr>
+                              <td>{{ log.sid }}</td>
+                              <td>{{ log.to_number }}</td>
+                              
+                              <td>
+                                  {% if log.status == "delivered" %}
+                                  <span class="status delivered">{{ log.status }}</span>
+                                  {% else %}
+                                  <span class="status pending">{{ log.status }}</span>
+                                  {% endif %}
+                              </td>
+                              
+                          </tr>
+                          {% empty %}
+                          <tr>
+                              <td colspan="4">No message logs found.</td>
+                          </tr>
+                          {% endfor %}
+                      </tbody>
+                  </table>
                 </div>
 
                 <!-- ================= New Customers ================ -->
@@ -713,7 +675,25 @@ body {
                         <h2>Recent Customers</h2>
                     </div>
 
-                    {% include 'clients.html' %}
+                    <table>
+                      <thead>
+                          <tr>
+                              <!-- <th>
+                                  <h2>Clients</h2>
+                              </th> -->
+                              
+                          </tr>
+                      </thead>
+                      <tbody>
+                          {% for client in clients %}
+                              <tr>
+              
+                                  <td>{{ client.client_name }}</td>
+                                  
+                              </tr>
+                          {% endfor %}
+                      </tbody>
+                  </table>
                 </div>
             </div>
         </div>

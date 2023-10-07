@@ -21,7 +21,9 @@ from django.db.models import Q
 
 def home(request):
     sales_orders = SalesOrder.objects.all()
-    deliveries = DeliveryNote.objects.all()
+    # deliveries = DeliveryNote.objects.all()
+    message_logs = MessageLog.objects.all()
+    clients = ClientDetails.objects.all()
 
     total_order_value = sales_orders.aggregate(total_order_value = Sum('total_order_value'))['total_order_value'] or 0
     tax_value = SalesOrder.objects.count()
@@ -32,7 +34,9 @@ def home(request):
         'total_order_value':total_order_value,
         'tax_value':tax_value,
         'total_clients':total_clients,
-        'deliveries_value':deliveries_value
+        'deliveries_value':deliveries_value,
+        'message_logs': message_logs,
+        'clients':clients,
     }
 
     return render(request,'dashboard.html',context)
@@ -80,7 +84,7 @@ def search_clients_delivery(request):
 def message_logs(request):
  # Retrieve all message logs from the database
     message_logs = MessageLog.objects.all()
-    return render(request, 'message_logs.html', {'message_logs': message_logs})
+    return render(request, 'dashboard.html', {'message_logs': message_logs})
 
 def send_sales_order(request,client_id):
     client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
@@ -98,20 +102,19 @@ def send_sales_order(request,client_id):
                     order.delivery_address),
                 to='whatsapp:+{}'.format(user_whatsapp_number)
             )
-            message_log = MessageLog.objects.create(
+            message_logs = MessageLog.objects.create(
                 content = message.body,
                 to_number = user_whatsapp_number,
                 sid = message.sid
 
             )
+            print(f"{message_logs}")
+            
             print(f"WhatsApp message sent to {user_whatsapp_number}, SID: {message.sid}")
         except TwilioRestException as e:
             print(f"WhatsApp message to {user_whatsapp_number} failed. Error: {e}")
             # return HttpResponse('Great! Expect a message...')
-            return redirect('sales_order_list')
-            
-
-        
+        return redirect('sales_order_list')
 
     else:
         return HttpResponse('No order details found in the database.')
@@ -228,7 +231,7 @@ def delivery_note(request,client_id):
     user_whatsapp_number = client_instance.whatsapp_number
 
     notes = DeliveryNote.objects.filter(client = client_instance)
-    print(f"Delivery Notes: {notes}")
+    # print(f"Delivery Notes: {notes}")
 
     for order in notes:
         message = client.messages.create(
@@ -277,7 +280,52 @@ def deliveries_list(request):
 
 
 def sales_invoice(request):
-    return render(request,'sales_invoice.html')
+
+    # Date Sorting
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    clients = ClientDetails.objects.all()
+
+    if start_date and end_date:
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
+        end_date = datetime.strptime(end_date, '%Y-%m-%d')
+        invoices = SalesInvoice.objects.filter(
+            Q(date_added__range=(start_date, end_date)) |
+            Q(date_modified__range=(start_date, end_date))
+        ).order_by('-date_added')
+    else:
+        invoices = SalesInvoice.objects.filter(client__in=clients)
+
+    invoices = SalesInvoice.objects.all()
+    context = {
+        'invoices':invoices,
+        'start_date':start_date,
+        'end_date':end_date
+
+    }
+
+    return render(request,'sales_invoice.html',context)
+
+def send_invoice(request,client_id):
+    client = Client(TWILIO_ACCOUNT_SID,TWILIO_AUTH_TOKEN)
+    client_instance = get_object_or_404(ClientDetails,pk = client_id)
+    user_whatsapp_number = client_instance.whatsapp_number
+
+    invoice = SalesInvoice.objects.filter(client = client_instance)
+    for order in invoice:
+        message =client.messages.create(
+            from_ = 'whatsapp:+14155238886',
+            body = 'The invoice for: {} .Invoice Number: {}.Invoice Date:{} for Sales Order Number: {}. With Total Value:{}For order of delivery date: {}'.format(
+                order.client,order.invoice_number,order.invoice_date,order.sales_order,order.total_invoice_value,order.delivery_note_date
+            ),
+            to='whatsapp:+{}'.format(user_whatsapp_number)
+        )
+        print(f"WhatsApp message sent to {user_whatsapp_number}, SID: {message.sid}")
+        # return HttpResponse('Great! Expect a message...')
+        return redirect('sales_invoices')
+    else:
+        return HttpResponse('No order details found in the database.')
 
 
 def clients(request):
@@ -286,14 +334,25 @@ def clients(request):
         'clients_list':clients_list
     }
 
-    return render(request,'dashboard.html',context)
+    return render(request,'clients.html',context)
 def dashboard(request):
     sales_orders = SalesOrder.objects.all()
+    deliveries = DeliveryNote.objects.all()
+    message_logs = MessageLog.objects.all()
+    clients = ClientDetails.objects.all()
 
     total_order_value = sales_orders.aggregate(total_order_value = Sum('total_order_value'))['total_order_value'] or 0
+    tax_value = SalesOrder.objects.count()
+    total_clients = ClientDetails.objects.count()
+    deliveries_value = DeliveryNote.objects.count()
 
     context = {
-        'total_order_value':total_order_value
+        'total_order_value':total_order_value,
+        'tax_value':tax_value,
+        'total_clients':total_clients,
+        'deliveries_value':deliveries_value,
+        'message_logs': message_logs,
+        'clients':clients,
     }
 
     return render(request,'dashboard.html',context)

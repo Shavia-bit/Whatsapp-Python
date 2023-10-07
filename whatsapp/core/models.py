@@ -56,7 +56,7 @@ class MessageLog(models.Model):
     content = models.TextField()
     to_number = models.CharField(max_length=15)
     sid = models.CharField(max_length=64)
-    status = models.CharField(max_length=20, default='pending')#Initial status set to pending
+    status = models.CharField(max_length=20, default='delivered')
     
     def __str__(self):
         return f'SID: {self.sid}, Status: {self.status}'
