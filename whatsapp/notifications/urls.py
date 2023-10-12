@@ -16,12 +16,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from core.views import send_invoice,clients, sales_invoice,sales_order_list, search_clients, send_notification,home,client_sales_order,delivery_note, send_notification_view, send_sales_order,deliveries_list,search_clients_delivery,dashboard,message_logs
+from core.views import CustomLoginView, register, send_invoice,clients, sales_invoice,sales_order_list, search_clients, send_notification,home,client_sales_order,delivery_note, send_notification_view, send_sales_order,deliveries_list,search_clients_delivery,dashboard,message_logs, token_verification
 
 
 
 urlpatterns = [
+    path('accounts/login/',CustomLoginView.as_view(),name='login'),
     path('admin/', admin.site.urls),
+    path('register/',register, name='register'),
+    path('token-verification/', token_verification, name='token_verification'),
     path('',home,name='home'),
     path('send_notification/',send_notification,name='send_notification'),
     path('client_sales_orders/',client_sales_order,name = 'cliet_sales_order'),
