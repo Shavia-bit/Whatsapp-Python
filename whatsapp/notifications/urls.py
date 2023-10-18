@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from core.views import CustomLoginView, register, send_invoice,clients, sales_invoice,sales_order_list, search_clients, send_notification,home,client_sales_order,delivery_note, send_notification_view, send_sales_order,deliveries_list,search_clients_delivery,dashboard,message_logs, token_verification
+from core.views import CustomLoginView, register, send_invoice,clients, sales_invoice,sales_order_list, search_clients, send_notification,home,client_sales_order,delivery_note, send_notification_view, send_sales_order,deliveries_list,search_clients_delivery,dashboard,message_logs, settings, token_verification
 
 
 
@@ -39,5 +39,6 @@ urlpatterns = [
     path('dashboard/', dashboard, name='dashboard'),
     path('clients/', clients, name='client_list'),
     path('message_logs/', message_logs, name='message_logs'),
-    path('sales_invoices/',sales_invoice, name='sales_invoices')
+    path('sales_invoices/',sales_invoice, name='sales_invoices'),
+    path('settings/',settings, name = 'settings')
 ]

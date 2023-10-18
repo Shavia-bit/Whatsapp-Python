@@ -54,6 +54,9 @@ def token_verification (request):
             return render(request,'token_verification.html',{'error_message':'Invalid Token'})
     return render(request,'token_verification.html')
 
+@login_required
+def settings(request):
+    return render(request,'settings.html')
 
 @login_required
 def home(request):

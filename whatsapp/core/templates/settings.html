@@ -1,0 +1,941 @@
+{% block content %}
+<!DOCTYPE html>
+<html>
+    <!DOCTYPE html>
+<html>
+  <head>
+    <title>Settings</title>
+    
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap");
+
+/* =============== Globals ============== */
+* {
+  font-family: "Ubuntu", sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --blue: #2a2185;
+  --white: #fff;
+  --gray: #f5f5f5;
+  --black1: #222;
+  --black2: #999;
+}
+
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.container {
+  position: relative;
+  width: 100%;
+}
+
+/* =============== Navigation ================ */
+.navigation {
+  position: fixed;
+  width: 300px;
+  height: 100%;
+  background: var(--blue);
+  border-left: 10px solid var(--blue);
+  transition: 0.5s;
+  overflow: hidden;
+}
+.navigation.active {
+  width: 80px;
+}
+
+.navigation ul {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+.navigation ul li {
+  position: relative;
+  width: 100%;
+  list-style: none;
+  border-top-left-radius: 30px;
+  border-bottom-left-radius: 30px;
+}
+
+.navigation ul li:hover,
+.navigation ul li.hovered {
+  background-color: var(--white);
+}
+
+.navigation ul li:nth-child(1) {
+  margin-bottom: 40px;
+  pointer-events: none;
+}
+
+.navigation ul li a {
+  position: relative;
+  display: block;
+  width: 100%;
+  display: flex;
+  text-decoration: none;
+  color: var(--white);
+}
+.navigation ul li:hover a,
+.navigation ul li.hovered a {
+  color: var(--blue);
+}
+
+.navigation ul li a .icon {
+  position: relative;
+  display: block;
+  min-width: 60px;
+  height: 60px;
+  line-height: 75px;
+  text-align: center;
+}
+.navigation ul li a .icon ion-icon {
+  font-size: 1.75rem;
+}
+
+.navigation ul li a .title {
+  position: relative;
+  display: block;
+  padding: 0 10px;
+  height: 60px;
+  line-height: 60px;
+  text-align: start;
+  white-space: nowrap;
+}
+
+/* --------- curve outside ---------- */
+.navigation ul li:hover a::before,
+.navigation ul li.hovered a::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: -50px;
+  width: 50px;
+  height: 50px;
+  background-color: transparent;
+  border-radius: 50%;
+  box-shadow: 35px 35px 0 10px var(--white);
+  pointer-events: none;
+}
+.navigation ul li:hover a::after,
+.navigation ul li.hovered a::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: -50px;
+  width: 50px;
+  height: 50px;
+  background-color: transparent;
+  border-radius: 50%;
+  box-shadow: 35px -35px 0 10px var(--white);
+  pointer-events: none;
+}
+
+/* ===================== Main ===================== */
+.main {
+  position: absolute;
+  width: calc(100% - 300px);
+  left: 300px;
+  min-height: 100vh;
+  background: var(--white);
+  transition: 0.5s;
+}
+.main.active {
+  width: calc(100% - 80px);
+  left: 80px;
+}
+
+.topbar {
+  width: 100%;
+  height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 10px;
+}
+
+.toggle {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2.5rem;
+  cursor: pointer;
+}
+
+.search {
+  position: relative;
+  width: 400px;
+  margin: 0 10px;
+}
+
+.search label {
+  position: relative;
+  width: 100%;
+}
+
+.search label input {
+  width: 100%;
+  height: 40px;
+  border-radius: 40px;
+  padding: 5px 20px;
+  padding-left: 35px;
+  font-size: 18px;
+  outline: none;
+  border: 1px solid var(--black2);
+}
+
+.search label ion-icon {
+  position: absolute;
+  top: 0;
+  left: 10px;
+  font-size: 1.2rem;
+}
+
+.user {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.user img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ======================= Cards ====================== */
+.cardBox {
+  position: relative;
+  width: 100%;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 30px;
+}
+
+.cardBox .card {
+  position: relative;
+  background: var(--white);
+  padding: 30px;
+  border-radius: 20px;
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+  box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
+}
+
+.cardBox .card .numbers {
+  position: relative;
+  font-weight: 500;
+  font-size: 2.5rem;
+  color: var(--blue);
+}
+
+.cardBox .card .cardName {
+  color: var(--black2);
+  font-size: 1.1rem;
+  margin-top: 5px;
+}
+
+.cardBox .card .iconBx {
+  font-size: 3.5rem;
+  color: var(--black2);
+}
+
+.cardBox .card:hover {
+  background: var(--blue);
+}
+.cardBox .card:hover .numbers,
+.cardBox .card:hover .cardName,
+.cardBox .card:hover .iconBx {
+  color: var(--white);
+}
+
+/* ================== Order Details List ============== */
+.details {
+  position: relative;
+  width: 100%;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  grid-gap: 30px;
+  /* margin-top: 10px; */
+}
+
+.details .recentOrders {
+  position: relative;
+  display: grid;
+  min-height: 500px;
+  background: var(--white);
+  padding: 20px;
+  box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
+  border-radius: 20px;
+}
+
+.details .cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.cardHeader h2 {
+  font-weight: 600;
+  color: var(--blue);
+}
+.cardHeader .btn {
+  position: relative;
+  padding: 5px 10px;
+  background: var(--blue);
+  text-decoration: none;
+  color: var(--white);
+  border-radius: 6px;
+}
+
+.details table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+.details table thead td {
+  font-weight: 600;
+}
+.details .recentOrders table tr {
+  color: var(--black1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+.details .recentOrders table tr:last-child {
+  border-bottom: none;
+}
+.details .recentOrders table tbody tr:hover {
+  background: var(--blue);
+  color: var(--white);
+}
+.details .recentOrders table tr td {
+  padding: 10px;
+}
+.details .recentOrders table tr td:last-child {
+  text-align: end;
+}
+.details .recentOrders table tr td:nth-child(2) {
+  text-align: end;
+}
+.details .recentOrders table tr td:nth-child(3) {
+  text-align: center;
+}
+.status.delivered {
+  padding: 2px 4px;
+  background: #8de02c;
+  color: var(--white);
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.status.pending {
+  padding: 2px 4px;
+  background: #e9b10a;
+  color: var(--white);
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.status.return {
+  padding: 2px 4px;
+  background: #f00;
+  color: var(--white);
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.status.inProgress {
+  padding: 2px 4px;
+  background: #1795ce;
+  color: var(--white);
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.recentCustomers {
+  position: relative;
+  display: grid;
+  min-height: 500px;
+  padding: 20px;
+  background: var(--white);
+  box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
+  border-radius: 20px;
+}
+.recentCustomers .imgBx {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 50px;
+  overflow: hidden;
+}
+.recentCustomers .imgBx img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.recentCustomers table tr td {
+  padding: 12px 10px;
+}
+.recentCustomers table tr td h4 {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.2rem;
+}
+.recentCustomers table tr td h4 span {
+  font-size: 14px;
+  color: var(--black2);
+}
+.recentCustomers table tr:hover {
+  background: var(--blue);
+  color: var(--white);
+}
+.recentCustomers table tr:hover td h4 span {
+  color: var(--white);
+}
+
+/* ====================== Responsive Design ========================== */
+@media (max-width: 991px) {
+  .navigation {
+    left: -300px;
+  }
+  .navigation.active {
+    width: 300px;
+    left: 0;
+  }
+  .main {
+    width: 100%;
+    left: 0;
+  }
+  .main.active {
+    left: 300px;
+  }
+  .cardBox {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .details {
+    grid-template-columns: 1fr;
+  }
+  .recentOrders {
+    overflow-x: auto;
+  }
+  .status.inProgress {
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .cardBox {
+    grid-template-columns: repeat(1, 1fr);
+  }
+  .cardHeader h2 {
+    font-size: 20px;
+  }
+  .user {
+    min-width: 40px;
+  }
+  .navigation {
+    width: 100%;
+    left: -100%;
+    z-index: 1000;
+  }
+  .navigation.active {
+    width: 100%;
+    left: 0;
+  }
+  .toggle {
+    z-index: 10001;
+  }
+  .main.active .toggle {
+    color: #fff;
+    position: fixed;
+    right: 0;
+    left: initial;
+  }
+}
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+    
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+    
+        th {
+            background-color: #f2f2f2;
+        }
+    
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+    
+        .btn-primary {
+            background-color: #007bff;
+            color: #fff;
+            padding: 5px 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            border-radius: 4px;
+        }
+    
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .input-wrap{
+            border-radius: 15px;
+            width: max-content;
+            filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+        }
+        .title-txt{
+          
+          align-items: flex-start;
+          color: #cc9900;
+          font-style: normal;
+          font-weight: 700;
+          font-size: larger;
+          margin: 8px;
+          filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+          
+          margin-bottom: 40px;
+          }
+
+        /*Bootsrap Angular Styles  */
+        :host {
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+          font-size: 14px;
+          color: #333;
+          box-sizing: border-box;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+        }
+      
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+          margin: 8px 0;
+        }
+      
+        p {
+          margin: 0;
+        }
+      
+        .spacer {
+          flex: 1;
+        }
+      
+        .toolbar {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 60px;
+          display: flex;
+          align-items: center;
+          background-color: #1976d2;
+          color: white;
+          font-weight: 600;
+        }
+      
+        .toolbar img {
+          margin: 0 16px;
+        }
+      
+        .toolbar #twitter-logo {
+          height: 40px;
+          margin: 0 8px;
+        }
+      
+        .toolbar #youtube-logo {
+          height: 40px;
+          margin: 0 16px;
+        }
+      
+        .toolbar #twitter-logo:hover,
+        .toolbar #youtube-logo:hover {
+          opacity: 0.8;
+        }
+      
+        .content {
+          display: flex;
+          margin: 82px auto 32px;
+          padding: 0 16px;
+          max-width: 960px;
+          flex-direction: column;
+          align-items: auto;
+        }
+      
+        svg.material-icons {
+          height: 24px;
+          width: auto;
+        }
+      
+        svg.material-icons:not(:last-child) {
+          margin-right: 8px;
+        }
+      
+        .card svg.material-icons path {
+          fill: #888;
+        }
+      
+        .card-container {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          margin-top: 16px;
+        }
+      
+        .card {
+          all: unset;
+          border-radius: 4px;
+          border: 1px solid #eee;
+          background-color: #b8d5e6;
+          height: 40px;
+          width: 200px;
+          margin: 0 8px 16px;
+          padding: 16px;
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          align-items: center;
+          transition: all 0.2s ease-in-out;
+          line-height: 24px;
+        }
+      
+        .card-container .card:not(:last-child) {
+          margin-right: 0;
+        }
+      
+        .card.card-small {
+          height: 16px;
+          width: 168px;
+        }
+      
+        .card-container .card:not(.highlight-card) {
+          cursor: pointer;
+        }
+      
+        .card-container .card:not(.highlight-card):hover {
+          transform: translateY(-3px);
+          box-shadow: 0 4px 17px rgba(0, 0, 0, 0.35);
+        }
+      
+        .card-container .card:not(.highlight-card):hover .material-icons path {
+          fill: rgb(105, 103, 103);
+        }
+      
+        .card.highlight-card {
+          background-color: #1976d2;
+          color: white;
+          font-weight: 600;
+          border: none;
+          width: auto;
+          min-width: 30%;
+          position: relative;
+        }
+      
+        .card.card.highlight-card span {
+          margin-left: 60px;
+        }
+      
+        svg#rocket {
+          width: 80px;
+          position: absolute;
+          left: -10px;
+          top: -24px;
+        }
+      
+        svg#rocket-smoke {
+          height: calc(100vh - 95px);
+          position: absolute;
+          top: 10px;
+          right: 180px;
+          z-index: -10;
+        }
+      
+        /* a,
+        a:visited,
+        a:hover {
+          color: #1976d2;
+          text-decoration: black;
+        }
+      
+        a:hover {
+          color: #125699;
+        } */
+      
+        .terminal {
+          position: relative;
+          width: 80%;
+          max-width: 600px;
+          border-radius: 6px;
+          padding-top: 45px;
+          margin-top: 8px;
+          overflow: hidden;
+          background-color: rgb(15, 15, 16);
+        }
+      
+        .terminal::before {
+          content: "\2022 \2022 \2022";
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 4px;
+          background: rgb(58, 58, 58);
+          color: #c2c3c4;
+          width: 100%;
+          font-size: 2rem;
+          line-height: 0;
+          padding: 14px 0;
+          text-indent: 4px;
+        }
+      
+        .terminal pre {
+          font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,monospace;
+          color: white;
+          padding: 0 1rem 1rem;
+          margin: 0;
+        }
+      
+        .circle-link {
+          height: 40px;
+          width: 40px;
+          border-radius: 40px;
+          margin: 8px;
+          background-color: white;
+          border: 1px solid #eeeeee;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          cursor: pointer;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+          transition: 1s ease-out;
+        }
+      
+        .circle-link:hover {
+          transform: translateY(-0.25rem);
+          box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.2);
+        }
+      
+        footer {
+          margin-top: 8px;
+          display: flex;
+          align-items: center;
+          line-height: 20px;
+        }
+      
+        footer a {
+          display: flex;
+          align-items: center;
+        }
+        .client-list {
+          color:white;
+          display: flex;
+          flex-wrap: wrap; /* Wrap items to a new row when they don't fit */
+          list-style: none; /* Remove bullet points from list items */
+          padding: 0; /* Remove default padding */
+        }
+      
+        .client-item {
+          flex: 0 0 calc(33.33% - 16px); /* Each item takes up 33.33% width with some spacing */
+          margin: 8px; /* Add spacing between items */
+          text-align: center; /* Center-align text within each item */
+        }
+        /* Add lines between table rows */
+        .table-row {
+          border-bottom: 5px solid #5967ff; /* You can adjust the color and style as needed */
+        }
+
+        /* Style the table header */
+        .table thead th {
+          background-color: #b8d5e6; /* Background color for header row */
+          font-weight: bold;
+        }
+
+        /* Style the table cells (optional) */
+        .table tbody td {
+          padding: 8px; /* Adjust padding as needed */
+        }
+
+      
+      
+        .github-star-badge {
+          color: #24292e;
+          display: flex;
+          align-items: center;
+          font-size: 12px;
+          padding: 3px 10px;
+          border: 1px solid rgba(27,31,35,.2);
+          border-radius: 3px;
+          background-image: linear-gradient(-180deg,#fafbfc,#eff3f6 90%);
+          margin-left: 4px;
+          font-weight: 600;
+        }
+      
+        .github-star-badge:hover {
+          background-image: linear-gradient(-180deg,#f0f3f6,#e6ebf1 90%);
+          border-color: rgba(27,31,35,.35);
+          background-position: -.5em;
+        }
+      
+        .github-star-badge .material-icons {
+          height: 16px;
+          width: 16px;
+          margin-right: 4px;
+        }
+
+                /* Responsive Styles */
+                @media screen and (max-width: 767px) {
+          .card-container > *:not(.circle-link) ,
+          .terminal {
+            width: 100%;
+          }
+      
+          .card:not(.highlight-card) {
+            height: 16px;
+            margin: 8px 0;
+          }
+      
+          .card.highlight-card span {
+            margin-left: 72px;
+          }
+      
+          svg#rocket-smoke {
+            right: 120px;
+            transform: rotate(-5deg);
+          }
+        }
+      
+        @media screen and (max-width: 768px) {
+          svg#rocket-smoke {
+            display: none;
+            visibility: hidden;
+          }
+        }
+    </style>
+    
+</head>
+    <body>
+
+        <div class="container">
+
+            {% include "sidebar.html"%}
+
+            <div class="main">
+
+                <!-- Toolbar -->
+                <div class="topbar">
+                  <div class="toggle">
+                      <ion-icon name="menu-outline"></ion-icon>
+                  </div>
+    
+                  <div class="search">
+                      <label>
+                          <input type="text" placeholder="Search here">
+                          <ion-icon name="search-outline"></ion-icon>
+                      </label>
+                  </div>
+    
+                  <div class="user">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                          <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                          <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                      </svg>
+                  </div>
+              </div>
+    
+      <br>
+      <div class="content" role="main">
+        <div class="card highlight-card card-small">
+      
+            <!-- <svg id="rocket" xmlns="http://www.w3.org/2000/svg" width="101.678" height="101.678" viewBox="0 0 101.678 101.678">
+              <title>Rocket Ship</title>
+              <g id="Group_83" data-name="Group 83" transform="translate(-141 -696)">
+                <circle id="Ellipse_8" data-name="Ellipse 8" cx="50.839" cy="50.839" r="50.839" transform="translate(141 696)" fill="#dd0031"/>
+                <g id="Group_47" data-name="Group 47" transform="translate(165.185 720.185)">
+                  <path id="Path_33" data-name="Path 33" d="M3.4,42.615a3.084,3.084,0,0,0,3.553,3.553,21.419,21.419,0,0,0,12.215-6.107L9.511,30.4A21.419,21.419,0,0,0,3.4,42.615Z" transform="translate(0.371 3.363)" fill="#fff"/>
+                  <path id="Path_34" data-name="Path 34" d="M53.3,3.221A3.09,3.09,0,0,0,50.081,0,48.227,48.227,0,0,0,18.322,13.437c-6-1.666-14.991-1.221-18.322,7.218A33.892,33.892,0,0,1,9.439,25.1l-.333.666a3.013,3.013,0,0,0,.555,3.553L23.985,43.641a2.9,2.9,0,0,0,3.553.555l.666-.333A33.892,33.892,0,0,1,32.647,53.3c8.55-3.664,8.884-12.326,7.218-18.322A48.227,48.227,0,0,0,53.3,3.221ZM34.424,9.772a6.439,6.439,0,1,1,9.106,9.106,6.368,6.368,0,0,1-9.106,0A6.467,6.467,0,0,1,34.424,9.772Z" transform="translate(0 0.005)" fill="#fff"/>
+                </g>
+              </g>
+            </svg> -->
+        
+            <span>Syspro Whatsapp </span>
+        
+            <!-- <svg id="rocket-smoke" xmlns="http://www.w3.org/2000/svg" width="516.119" height="1083.632" viewBox="0 0 516.119 1083.632">
+              <title>Rocket Ship Smoke</title>
+              <path id="Path_40" data-name="Path 40" d="M644.6,141S143.02,215.537,147.049,870.207s342.774,201.755,342.774,201.755S404.659,847.213,388.815,762.2c-27.116-145.51-11.551-384.124,271.9-609.1C671.15,139.365,644.6,141,644.6,141Z" transform="translate(-147.025 -140.939)" fill="#f5f5f5"/>
+            </svg> -->
+        
+          </div>
+    
+        <h1 class="title-txt">System Settings</h1>
+    
+    
+    
+      </div>
+    
+        </div>
+
+        </div>
+
+        <script>
+            // add hovered class to selected list item
+            let list = document.querySelectorAll(".navigation li");
+        
+            function activeLink() {
+                list.forEach((item) => {
+                    item.classList.remove("hovered");
+                });
+                this.classList.add("hovered");
+            }
+        
+            list.forEach((item) => item.addEventListener("mouseover", activeLink));
+        
+        // Menu Toggle
+            let toggle = document.querySelector(".toggle");
+            let navigation = document.querySelector(".navigation");
+            let main = document.querySelector(".main");
+        
+            toggle.onclick = function () {
+                navigation.classList.toggle("active");
+                main.classList.toggle("active");
+            };
+        
+        </script>
+        
+        <!-- ====== ionicons ======= -->
+        <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+        <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+
+
+    </body>
+</html>
+{% endblock %}
