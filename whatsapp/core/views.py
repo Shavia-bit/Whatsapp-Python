@@ -1,5 +1,5 @@
 from datetime import datetime
-from .models import Order,ClientDetails,SalesInvoice,SalesOrder,DeliveryNote,MessageLog
+from .models import Order,ClientDetails,SalesInvoice,SalesOrder,DeliveryNote,MessageLog,ClientData
 from twilio.rest import Client
 from twilio.base.exceptions import TwilioRestException 
 from notifications.settings import TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN
@@ -12,6 +12,8 @@ from django.contrib.auth.views import LoginView
 from django.core.mail import send_mail
 from django.utils.crypto import get_random_string
 from django.contrib.auth.decorators import login_required
+from .forms import UploadDataForm
+import pandas as pd
 
 class CustomLoginView(LoginView):
     template_name = 'login.html'
@@ -56,8 +58,23 @@ def token_verification (request):
 
 @login_required
 def settings(request):
-    return render(request,'settings.html')
+    if request.method == 'POST':
+        form = UploadDataForm(request.POST,request.FILES)
+        if form.is_valid():
+            excel_file = form.cleaned_data['excel_file']
+            df = pd.read_excel(excel_file)
+            for index, row in df.iterrows():
+                ClientData.objects.create(
+                    name=row['Customer Name'],
+                    id_number=row['Id No'],
+                    contact = row['Contact No'],
+                    wa_number = row['Whatsapp No']
+                )
 
+            return render(request,'settings.html')
+    else:
+        form=UploadDataForm()
+    return render(request, 'settings.html', {'form': form})
 @login_required
 def home(request):
     

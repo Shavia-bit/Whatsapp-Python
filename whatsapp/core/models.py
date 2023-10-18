@@ -93,5 +93,11 @@ class SalesInvoice(models.Model):
     def __str__(self):
         return self.invoice_number
 
+class ClientData(models.Model):
+    name = models.CharField(max_length=255)
+    id_number = models.CharField(max_length=20)
+    contact = models.CharField(max_length=15)
+    wa_number = models.CharField(max_length=15)
+
 
 
